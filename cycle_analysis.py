@@ -7,18 +7,95 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # Initialize the Dash app
-app = dash.Dash(__name__, title="CyclePerform Digital Twin")
+app = dash.Dash(__name__, title="CyclePerform Digital Twin", external_stylesheets=[
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+])
+
+# Add custom CSS for better styling
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+        <style>
+            body {
+                font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                color: #2d3436;
+                background-color: #f8f9fa;
+            }
+            
+            /* Custom styling for radio buttons */
+            .custom-radio input[type="radio"] {
+                cursor: pointer;
+            }
+            
+            .custom-radio label {
+                padding: 8px 12px;
+                border-radius: 16px;
+                margin-right: 8px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+            
+            .custom-radio label:hover {
+                background-color: #edf2f7;
+            }
+            
+            /* Custom styling for dropdown */
+            .Select-control {
+                border-radius: 6px !important;
+                border-color: #e2e8f0 !important;
+            }
+            
+            .Select-control:hover {
+                border-color: #cbd5e0 !important;
+            }
+            
+            /* Improve spacing */
+            .dash-graph {
+                padding-top: 8px;
+            }
+            
+            /* Tooltip styling */
+            .tooltip-inner {
+                background-color: #ffffff;
+                color: #2d3436;
+                border: 1px solid #e2e8f0;
+                border-radius: 6px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                padding: 12px;
+                font-size: 14px;
+                max-width: 300px;
+            }
+        </style>
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+'''
 
 # Define custom styles
 colors = {
-    'background': '#f2f2f2',
-    'panel': '#ffffff',
-    'accent1': '#ff6b6b',  # Red for menstrual phase
-    'accent2': '#feca57',  # Yellow for follicular phase
-    'accent3': '#1dd1a1',  # Green for ovulatory phase
-    'accent4': '#54a0ff',  # Blue for luteal phase
-    'text': '#2d3436',
-    'title': '#2d3436'
+    'background': '#f8f9fa',           # Lighter background
+    'panel': '#ffffff',                # White panels
+    'accent1': '#ff6b6b',              # Red for menstrual phase
+    'accent2': '#ffd166',              # Yellow for follicular phase
+    'accent3': '#06d6a0',              # Green for ovulatory phase
+    'accent4': '#118ab2',              # Blue for luteal phase
+    'text': '#2d3436',                 # Dark text
+    'title': '#1e3a8a',                # Navy blue for titles
+    'border': '#e2e8f0',               # Light border color
+    'button': '#4f46e5',               # Purple for buttons/selectors
+    'hover': '#3730a3'                 # Darker purple for hover states
 }
 
 # Load and prepare data
@@ -29,7 +106,7 @@ def load_data():
     file_path = "C:\\Users\\20211062\\OneDrive - TU Eindhoven\\Desktop\\Master's\\DBM190\\DBM190\\EFFECT OF MENSTRUAL CYCLE ON PHYSICAL ACTIVITY AMONG COLLEGE GOING RECREATIONAL ATHLETES (Responses).xlsx" 
     # Load the Excel file - in production code, replace with your file path
     df = pd.read_excel(file_path)
-
+    
     # Map numeric responses to meaningful labels for better visualization
     # Based on our analysis, 1 generally indicates higher impact, 3 lower impact
     response_mapping = {1: "High Impact", 2: "Moderate Impact", 3: "Low Impact"}
@@ -100,31 +177,130 @@ reverse_question_mapping = {v: k for k, v in question_labels.items()}
 # Prepare the app layout
 app.layout = html.Div(style={'backgroundColor': colors['background'], 'padding': '20px'}, children=[
     # Header
-    html.Div(style={'backgroundColor': colors['panel'], 'padding': '20px', 'marginBottom': '20px', 'borderRadius': '10px', 'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)'}, children=[
-        html.H1("CyclePerform Digital Twin", style={'color': colors['title'], 'textAlign': 'center'}),
-        html.P("Optimize your running performance through menstrual cycle analysis", style={'textAlign': 'center'}),
+    html.Div(style={
+        'backgroundColor': colors['panel'], 
+        'padding': '20px', 
+        'marginBottom': '20px', 
+        'borderRadius': '10px', 
+        'boxShadow': '0 4px 8px rgba(0, 0, 0, 0.1)',
+        'border': f'1px solid {colors["border"]}'
+    }, children=[
+        html.H1("CyclePerform Digital Twin", style={
+            'color': colors['title'], 
+            'textAlign': 'center',
+            'fontFamily': 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial',
+            'fontWeight': '700',
+            'marginBottom': '8px'
+        }),
+        html.P("Optimize your running performance through menstrual cycle analysis", style={
+            'textAlign': 'center',
+            'fontSize': '16px',
+            'color': '#718096',
+            'marginBottom': '24px'
+        }),
         
         # User profile snapshot
-        html.Div(style={'display': 'flex', 'justifyContent': 'space-between', 'marginTop': '20px'}, children=[
-            html.Div(style={'flex': '1'}, children=[
-                html.H4("Current Status"),
+        html.Div(style={
+            'display': 'flex', 
+            'flexWrap': 'wrap',
+            'justifyContent': 'space-between', 
+            'marginTop': '20px',
+            'gap': '16px'
+        }, children=[
+            html.Div(style={
+                'flex': '1',
+                'minWidth': '200px',
+                'backgroundColor': '#f7fafc',
+                'padding': '16px',
+                'borderRadius': '8px'
+            }, children=[
+                html.H4("Current Status", style={
+                    'fontSize': '16px',
+                    'fontWeight': '600',
+                    'color': colors['title'],
+                    'marginBottom': '12px'
+                }),
                 html.Div(style={'display': 'flex', 'alignItems': 'center'}, children=[
-                    html.H2("Luteal Phase", style={'marginRight': '10px', 'color': colors['accent4']}),
-                    html.Div("Day 22 of 28", style={'fontSize': '16px'})
+                    html.H2("Luteal Phase", style={
+                        'marginRight': '10px', 
+                        'color': colors['accent4'],
+                        'fontSize': '24px',
+                        'fontWeight': '700'
+                    }),
+                    html.Div("Day 22 of 28", style={
+                        'fontSize': '16px',
+                        'backgroundColor': '#e6f2f5',
+                        'padding': '4px 8px',
+                        'borderRadius': '16px',
+                        'color': colors['accent4']
+                    })
                 ]),
-                html.Div("Based on your cycle history and symptoms", style={'fontSize': '14px', 'color': '#777'})
+                html.Div("Based on your cycle history and symptoms", style={
+                    'fontSize': '14px', 
+                    'color': '#718096',
+                    'marginTop': '8px'
+                })
             ]),
             
-            html.Div(style={'flex': '1'}, children=[
-                html.H4("Today's Recommendation"),
+            html.Div(style={
+                'flex': '1',
+                'minWidth': '200px',
+                'backgroundColor': '#f7fafc',
+                'padding': '16px',
+                'borderRadius': '8px'
+            }, children=[
+                html.H4("Today's Recommendation", style={
+                    'fontSize': '16px',
+                    'fontWeight': '600',
+                    'color': colors['title'],
+                    'marginBottom': '12px'
+                }),
                 html.P("Focus on moderate intensity workouts with emphasis on technique rather than pushing for new personal records.", 
-                       style={'fontSize': '14px'})
+                       style={
+                           'fontSize': '14px',
+                           'lineHeight': '1.5',
+                           'color': colors['text']
+                       })
             ]),
             
-            html.Div(style={'flex': '1'}, children=[
-                html.H4("Current Readiness"),
-                html.Div(style={'fontSize': '48px', 'fontWeight': 'bold', 'color': '#ff9f43'}, children=["73%"]),
-                html.Div("Moderate Energy Level", style={'fontSize': '14px'})
+            html.Div(style={
+                'flex': '1',
+                'minWidth': '200px',
+                'backgroundColor': '#f7fafc',
+                'padding': '16px',
+                'borderRadius': '8px',
+                'display': 'flex',
+                'flexDirection': 'column',
+                'alignItems': 'center',
+                'justifyContent': 'center'
+            }, children=[
+                html.H4("Current Readiness", style={
+                    'fontSize': '16px',
+                    'fontWeight': '600',
+                    'color': colors['title'],
+                    'marginBottom': '12px',
+                    'textAlign': 'center'
+                }),
+                html.Div(style={
+                    'fontSize': '48px', 
+                    'fontWeight': 'bold', 
+                    'color': '#f59e0b',
+                    'textAlign': 'center',
+                    'display': 'flex',
+                    'alignItems': 'center',
+                    'justifyContent': 'center',
+                    'width': '100px',
+                    'height': '100px',
+                    'borderRadius': '50%',
+                    'backgroundColor': '#fff',
+                    'border': '8px solid #fef3c7',
+                    'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.1)'
+                }, children=["73%"]),
+                html.Div("Moderate Energy Level", style={
+                    'fontSize': '14px',
+                    'marginTop': '8px',
+                    'color': '#718096'
+                })
             ])
         ])
     ]),
@@ -132,37 +308,110 @@ app.layout = html.Div(style={'backgroundColor': colors['background'], 'padding':
     # Main content area
     html.Div(style={'display': 'flex', 'flexWrap': 'wrap', 'gap': '20px'}, children=[
         # Left panel - Performance by Cycle Phase
-        html.Div(style={'flex': '1', 'minWidth': '350px', 'backgroundColor': colors['panel'], 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)'}, children=[
-            html.H3("Your Performance Across Cycle Phases", style={'marginBottom': '20px'}),
+        html.Div(style={
+            'flex': '1', 
+            'minWidth': '350px', 
+            'backgroundColor': colors['panel'], 
+            'padding': '24px', 
+            'borderRadius': '10px', 
+            'boxShadow': '0 4px 8px rgba(0, 0, 0, 0.1)',
+            'border': f'1px solid {colors["border"]}'
+        }, children=[
+            html.H3("Your Performance Across Cycle Phases", style={
+                'marginBottom': '20px',
+                'color': colors['title'],
+                'fontWeight': '600',
+                'fontSize': '18px'
+            }),
             dcc.Graph(id='cycle-performance-radar'),
-            html.Div(style={'marginTop': '10px'}, children=[
-                html.H4("Phase Selection"),
+            html.Div(style={
+                'marginTop': '16px',
+                'backgroundColor': '#f7fafc',
+                'padding': '12px',
+                'borderRadius': '8px'
+            }, children=[
+                html.H4("Phase Selection", style={
+                    'marginBottom': '8px',
+                    'fontSize': '16px',
+                    'fontWeight': '500',
+                    'color': colors['title']
+                }),
                 dcc.RadioItems(
                     id='phase-selection',
                     options=[{'label': phase, 'value': phase} for phase in user_df['Phase'].unique()],
                     value='Luteal',
-                    inline=True
+                    inline=True,
+                    style={
+                        'display': 'flex',
+                        'justifyContent': 'space-between'
+                    },
+                    className='custom-radio'
                 )
             ])
         ]),
         
         # Right panel - Recommendations and training adjustments
-        html.Div(style={'flex': '1', 'minWidth': '350px', 'backgroundColor': colors['panel'], 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)'}, children=[
-            html.H3("Recommended Training Adjustments", style={'marginBottom': '20px'}),
+        html.Div(style={
+            'flex': '1', 
+            'minWidth': '350px', 
+            'backgroundColor': colors['panel'], 
+            'padding': '24px', 
+            'borderRadius': '10px', 
+            'boxShadow': '0 4px 8px rgba(0, 0, 0, 0.1)',
+            'border': f'1px solid {colors["border"]}'
+        }, children=[
+            html.H3("Recommended Training Adjustments", style={
+                'marginBottom': '20px',
+                'color': colors['title'],
+                'fontWeight': '600',
+                'fontSize': '18px'
+            }),
             dcc.Graph(id='training-recommendations'),
-            html.Div(style={'marginTop': '15px'}, children=[
-                html.H4("Phase-Specific Advice"),
+            html.Div(style={
+                'marginTop': '16px',
+                'backgroundColor': '#f7fafc',
+                'padding': '16px',
+                'borderRadius': '8px'
+            }, children=[
+                html.H4("Phase-Specific Advice", style={
+                    'marginBottom': '12px',
+                    'fontSize': '16px',
+                    'fontWeight': '500',
+                    'color': colors['title']
+                }),
                 html.Div(id='phase-advice')
             ])
         ])
     ]),
     
     # Second row
-    html.Div(style={'display': 'flex', 'flexWrap': 'wrap', 'gap': '20px', 'marginTop': '20px'}, children=[
+    html.Div(style={
+        'display': 'flex', 
+        'flexWrap': 'wrap', 
+        'gap': '20px', 
+        'marginTop': '20px'
+    }, children=[
         # Survey data visualization
-        html.Div(style={'flex': '2', 'minWidth': '350px', 'backgroundColor': colors['panel'], 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)'}, children=[
-            html.H3("Athletic Performance Impact Analysis", style={'marginBottom': '20px'}),
-            html.P("Based on survey of 361 recreational athletes", style={'fontSize': '14px', 'color': '#777', 'marginBottom': '20px'}),
+        html.Div(style={
+            'flex': '2', 
+            'minWidth': '350px', 
+            'backgroundColor': colors['panel'], 
+            'padding': '24px', 
+            'borderRadius': '10px', 
+            'boxShadow': '0 4px 8px rgba(0, 0, 0, 0.1)',
+            'border': f'1px solid {colors["border"]}'
+        }, children=[
+            html.H3("Athletic Performance Impact Analysis", style={
+                'marginBottom': '12px',
+                'color': colors['title'],
+                'fontWeight': '600',
+                'fontSize': '18px'
+            }),
+            html.P("Based on survey of 361 recreational athletes", style={
+                'fontSize': '14px', 
+                'color': '#718096', 
+                'marginBottom': '20px'
+            }),
             dcc.Dropdown(
                 id='impact-selection',
                 options=[
@@ -177,29 +426,73 @@ app.layout = html.Div(style={'backgroundColor': colors['background'], 'padding':
                     ]
                 ],
                 value='Energy Fluctuations',
-                clearable=False
+                clearable=False,
+                style={
+                    'marginBottom': '16px',
+                    'borderRadius': '6px',
+                    'border': f'1px solid {colors["border"]}',
+                }
             ),
             dcc.Graph(id='impact-distribution')
         ]),
         
         # Correlations and insights
-        html.Div(style={'flex': '1', 'minWidth': '350px', 'backgroundColor': colors['panel'], 'padding': '20px', 'borderRadius': '10px', 'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)'}, children=[
-            html.H3("Performance Insights", style={'marginBottom': '20px'}),
+        html.Div(style={
+            'flex': '1', 
+            'minWidth': '350px', 
+            'backgroundColor': colors['panel'], 
+            'padding': '24px', 
+            'borderRadius': '10px', 
+            'boxShadow': '0 4px 8px rgba(0, 0, 0, 0.1)',
+            'border': f'1px solid {colors["border"]}'
+        }, children=[
+            html.H3("Performance Insights", style={
+                'marginBottom': '12px',
+                'color': colors['title'],
+                'fontWeight': '600',
+                'fontSize': '18px'
+            }),
             dcc.Graph(id='correlations-heatmap'),
-            html.Div(style={'marginTop': '15px', 'padding': '15px', 'backgroundColor': '#f8f9fa', 'borderRadius': '5px'}, children=[
-                html.H4("Key Findings", style={'marginBottom': '10px'}),
+            html.Div(style={
+                'marginTop': '16px', 
+                'padding': '16px', 
+                'backgroundColor': '#f7fafc', 
+                'borderRadius': '8px',
+                'border': f'1px solid {colors["border"]}'
+            }, children=[
+                html.H4("Key Findings", style={
+                    'marginBottom': '12px',
+                    'fontSize': '16px',
+                    'fontWeight': '500',
+                    'color': colors['title']
+                }),
                 html.Ul([
-                    html.Li("75% of athletes experience energy fluctuations across their cycle"),
-                    html.Li("Fatigue and recovery time are closely correlated"),
-                    html.Li("Strength variations are most pronounced during the menstrual phase")
-                ])
+                    html.Li("75% of athletes experience energy fluctuations across their cycle", 
+                           style={'marginBottom': '6px', 'lineHeight': '1.5'}),
+                    html.Li("Fatigue and recovery time are closely correlated",
+                           style={'marginBottom': '6px', 'lineHeight': '1.5'}),
+                    html.Li("Strength variations are most pronounced during the menstrual phase",
+                           style={'marginBottom': '6px', 'lineHeight': '1.5'})
+                ], style={'paddingLeft': '20px'})
             ])
         ])
     ]),
     
     # Bottom panel - Cycle phase calendar
-    html.Div(style={'backgroundColor': colors['panel'], 'padding': '20px', 'marginTop': '20px', 'borderRadius': '10px', 'boxShadow': '0 4px 6px rgba(0, 0, 0, 0.1)'}, children=[
-        html.H3("Your Cycle-Based Training Planner", style={'marginBottom': '20px'}),
+    html.Div(style={
+        'backgroundColor': colors['panel'], 
+        'padding': '24px', 
+        'marginTop': '20px', 
+        'borderRadius': '10px', 
+        'boxShadow': '0 4px 8px rgba(0, 0, 0, 0.1)',
+        'border': f'1px solid {colors["border"]}'
+    }, children=[
+        html.H3("Your Cycle-Based Training Planner", style={
+            'marginBottom': '16px',
+            'color': colors['title'],
+            'fontWeight': '600',
+            'fontSize': '18px'
+        }),
         dcc.Graph(id='training-planner')
     ])
 ])
@@ -266,12 +559,29 @@ def update_radar_chart(selected_phase):
         polar=dict(
             radialaxis=dict(
                 visible=True,
-                range=[0, 100]
-            )
+                range=[0, 100],
+                linecolor='lightgray',
+                gridcolor='lightgray'
+            ),
+            angularaxis=dict(
+                linecolor='lightgray',
+                gridcolor='lightgray'
+            ),
+            bgcolor='white'
         ),
         showlegend=True,
         height=400,
-        margin=dict(l=40, r=40, t=40, b=40)
+        margin=dict(l=40, r=40, t=40, b=40),
+        legend=dict(
+            bgcolor='rgba(255,255,255,0.8)',
+            bordercolor=colors['border'],
+            borderwidth=1
+        ),
+        paper_bgcolor='white',
+        font=dict(
+            family="system-ui, -apple-system, Segoe UI, Roboto",
+            color=colors['text']
+        )
     )
     
     return fig
@@ -346,15 +656,25 @@ def update_training_recommendations(selected_phase):
     
     # Update layout
     fig.update_layout(
-        height=350,
-        margin=dict(l=40, r=40, t=40, b=80),
         title_text="Recommended Workouts",
+        title_font=dict(size=16, color=colors['title'], family="system-ui, -apple-system, Segoe UI, Roboto"),
+        height=350,
+        margin=dict(l=40, r=40, t=60, b=80),
+        paper_bgcolor='white',
+        plot_bgcolor='white',
         legend=dict(
             orientation="h",
             yanchor="bottom",
             y=1.02,
             xanchor="right",
-            x=1
+            x=1,
+            bgcolor='rgba(255,255,255,0.8)',
+            bordercolor=colors['border'],
+            borderwidth=1
+        ),
+        font=dict(
+            family="system-ui, -apple-system, Segoe UI, Roboto",
+            color=colors['text']
         )
     )
     
@@ -374,7 +694,7 @@ def update_training_recommendations(selected_phase):
     [Input('phase-selection', 'value')]
 )
 def update_phase_advice(selected_phase):
-    # Create a dictionary of advice by phase
+    # Update phase advice
     phase_advice = {
         'Menstrual': [
             "Focus on gentle recovery workouts",
@@ -404,7 +724,13 @@ def update_phase_advice(selected_phase):
     
     advice = phase_advice[selected_phase]
     
-    return html.Ul([html.Li(item) for item in advice])
+    return html.Ul([
+        html.Li(item, style={
+            'marginBottom': '8px',
+            'lineHeight': '1.5',
+            'fontSize': '14px'
+        }) for item in advice
+    ], style={'paddingLeft': '20px'})
 
 # Callback for impact distribution
 @app.callback(
@@ -439,10 +765,25 @@ def update_impact_distribution(selected_impact):
         # Update layout
         fig.update_layout(
             title=f"Distribution of {selected_impact}",
+            title_font=dict(size=16, color=colors['title'], family="system-ui, -apple-system, Segoe UI, Roboto"),
             xaxis_title="Impact Level",
             yaxis_title="Number of Athletes",
             height=350,
-            margin=dict(l=40, r=40, t=80, b=40)
+            margin=dict(l=40, r=40, t=80, b=40),
+            paper_bgcolor='white',
+            plot_bgcolor='white',
+            font=dict(
+                family="system-ui, -apple-system, Segoe UI, Roboto",
+                color=colors['text']
+            ),
+            xaxis=dict(
+                gridcolor='rgba(0,0,0,0.05)',
+                showgrid=True
+            ),
+            yaxis=dict(
+                gridcolor='rgba(0,0,0,0.05)',
+                showgrid=True
+            )
         )
         
         return fig
@@ -492,9 +833,21 @@ def update_correlations_heatmap(dummy):
     # Update layout
     fig.update_layout(
         title="Correlation Between Performance Metrics",
+        title_font=dict(size=16, color=colors['title'], family="system-ui, -apple-system, Segoe UI, Roboto"),
         height=350,
         margin=dict(l=10, r=10, t=50, b=10),
-        xaxis=dict(tickangle=45),
+        xaxis=dict(
+            tickangle=45,
+            tickfont=dict(size=10)
+        ),
+        yaxis=dict(
+            tickfont=dict(size=10)
+        ),
+        paper_bgcolor='white',
+        font=dict(
+            family="system-ui, -apple-system, Segoe UI, Roboto",
+            color=colors['text']
+        )
     )
     
     return fig
