@@ -103,9 +103,10 @@ def load_data():
     # In a real application, this would load your Excel file
     # For now, we'll create a simulated dataframe based on the analysis
     
-    file_path = "C:\\Users\\20211062\\OneDrive - TU Eindhoven\\Desktop\\Master's\\DBM190\\DBM190\\EFFECT OF MENSTRUAL CYCLE ON PHYSICAL ACTIVITY AMONG COLLEGE GOING RECREATIONAL ATHLETES (Responses).xlsx" 
+    file_path = "C:\\Users\\marks\\Desktop\\Master's\\DBM190\\Project Dataset\\EFFECT OF MENSTRUAL CYCLE ON PHYSICAL ACTIVITY AMONG COLLEGE GOING RECREATIONAL ATHLETES (Responses).xlsx" 
     # Load the Excel file - in production code, replace with your file path
     df = pd.read_excel(file_path)
+
     
     # Map numeric responses to meaningful labels for better visualization
     # Based on our analysis, 1 generally indicates higher impact, 3 lower impact
