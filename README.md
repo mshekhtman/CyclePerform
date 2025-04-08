@@ -2,6 +2,11 @@
 
 This dashboard is a visualization prototype for a digital twin that helps runners optimize their training based on their menstrual cycle data. It showcases the main features of the digital twin concept without requiring full implementation.
 
+## Design Prototype
+
+View our full interface design prototype on Figma:
+[CyclePerform Prototype](https://www.figma.com/proto/QHdwiavdZKRaH5nu095P6Z/Design?page-id=0%3A1&node-id=361-173&viewport=-6684%2C-6640%2C0.49&t=w7YMPLBfipHLib5q-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=361%3A173)
+
 ## Features
 
 The dashboard includes:
@@ -26,6 +31,27 @@ In a fully implemented digital twin, the user data would come from:
 - Performance metrics from wearable devices
 - Training logs and perceived exertion
 - Recovery metrics
+
+## Research Data
+
+Our dashboard incorporates data from the study "Effect of Menstrual Cycle on Physical Activity Among College Going Recreational Athletes" (available at: https://data.mendeley.com/datasets/33bcv2jfbx/1, Toor, Dilrose; saha, joydip (2024), Mendeley Data, V1, doi: 10.17632/33bcv2jfbx.1).
+
+## Design Roles
+
+CyclePerform implements two key design roles as part of its digital twin architecture:
+
+1. **The Coach**: Provides personalized training recommendations, adapts to the user's physiological state, and delivers actionable insights for daily training decisions.
+
+2. **The Forecaster**: Tracks cycle phases and bodily changes, visualizes physiological readiness, and predicts future performance patterns to enable long-term planning.
+
+Each visualization in the dashboard is aligned with one or both of these roles:
+- Radar Chart: Coach role (performance profile across metrics)
+- Bar Charts: Coach role (specific workout recommendations)
+- Body Readiness Indicator: Coach role (current physiological state)
+- 28-day Calendar: Forecaster role (future planning)
+- Impact Distribution Chart: Both roles (contextual understanding)
+- Correlation Heatmap: Forecaster role (understanding performance relationships)
+
 
 ## How to Run the Dashboard
 
@@ -119,6 +145,16 @@ Potential features for future iterations:
 3. **Nutrition Recommendations**: Tailored dietary suggestions for each phase
 4. **Recovery Monitoring**: Integration with sleep and HRV data
 5. **Team Integration**: Features for coaches working with female athletes
+
+## Planned Evaluation Strategy
+
+We've planned the following evaluation methods to assess the effectiveness of the CyclePerform digital twin:
+
+1. **User Acceptance Testing**: With 8-12 competitive female runners to evaluate interface usability and recommendation relevance
+2. **Expert Review Sessions**: With sports physiologists and running coaches to validate our training recommendations model
+3. **A/B Testing**: To compare different visualization approaches for physiological data representation
+
+These methods will help us measure key metrics including usability (via System Usability Scale), user satisfaction, and trust in the digital twin's recommendations across different cycle phases.
 
 ## About Digital Twins
 
